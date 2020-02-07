@@ -2,22 +2,15 @@ package com.qa.swamp;
 
 public class Map {
 	private MapSize mapSize;
-//	private List<MapObject> mapObjects = new ArrayList<MapObject>();
-	private MapObject player;
-	private MapObject treasure;
 
 	public Map(MapSize mapSize) {
 		this.mapSize = mapSize;
 	}
 
 	public void initialise() {
-		MapObjectFactory factory = new MapObjectFactory();
 
-		MapObject player = factory.buildMapObject(MapObjectType.PLAYER, mapSize);
-		MapObject treasure = factory.buildMapObject(MapObjectType.TREASURE, mapSize);
-
-		this.player = player;
-		this.treasure = treasure;
+		MapObjectFactory.buildMapObject(MapObjectType.PLAYER, mapSize);
+		MapObjectFactory.buildMapObject(MapObjectType.TREASURE, mapSize);
 	}
 	
 	public void play() {
@@ -28,27 +21,26 @@ public class Map {
 		System.out.println("It has hands like a watch, but the hands don't seem to tell time.");
 		System.out.println("Which way do you want to go?");
 		System.out.println("(HINT!) Try North, South, East or West.");
+		System.out.println("The dial reads: " + getDistance(getMapObject(MapObjectType.PLAYER), getMapObject(MapObjectType.TREASURE)));
 
 		while (!won) {
 			Direction direction = Direction.getDirection();
 			switch (direction) {
 			case NORTH:
-				moveObjectNorth(getPlayer());
+				moveObjectNorth(getMapObject(MapObjectType.PLAYER));
 				break;
 			case EAST:
-				moveObjectEast(getPlayer());
+				moveObjectEast(getMapObject(MapObjectType.PLAYER));
 				break;
 			case SOUTH:
-				moveObjectSouth(getPlayer());
+				moveObjectSouth(getMapObject(MapObjectType.PLAYER));
 				break;
 			case WEST:
-				moveObjectWest(getPlayer());
+				moveObjectWest(getMapObject(MapObjectType.PLAYER));
 				break;
 			}
-//			printLocation(getPlayer());
-//			printLocation(getTreasure());
-			System.out.println("The dial reads: " + getDistance(getPlayer(), getTreasure()));
-			if(getDistance(getPlayer(), getTreasure()) == 0.0) won = true;
+			System.out.println("The dial reads: " + getDistance(getMapObject(MapObjectType.PLAYER), getMapObject(MapObjectType.TREASURE)));
+			if(getDistance(getMapObject(MapObjectType.PLAYER), getMapObject(MapObjectType.TREASURE)) == 0.0) won = true;
 		}
 		
 		System.out.println("Congratulaions! You found some dank swamp memes!");
@@ -89,24 +81,21 @@ public class Map {
 		else
 			mapObject.setxLoc(xLoc - 1);
 	}
-
-	public MapObject getPlayer() {
-//		return mapObjects.stream().filter(mapObject -> mapObject.getClass().isInstance(Player.class)).findFirst()
-//				.orElse(null);
-		return this.player;
-	}
-
-	public MapObject getTreasure() {
-//		return mapObjects.stream().filter(mapObject -> mapObject.getClass().isInstance(Treasure.class)).findFirst()
-//				.orElse(null);
-		return this.treasure;
+	
+	public MapObject getMapObject(MapObjectType mapObjectType) {
+		return MapObjectFactory.getMapObjects().stream()
+				.filter(mapObject -> mapObject.getType().equals(mapObjectType))
+				.findFirst()
+				.orElse(null);
 	}
 
 	public void printLocation(MapObject mapObject) {
-		if (mapObject.getClass().equals(Player.class)) System.out.println("Player");
-		else if (mapObject.getClass().equals(Treasure.class)) System.out.println("Treasure");
-		System.out.println("X : " + mapObject.getxLoc());
-		System.out.println("Y : " + mapObject.getyLoc());
+		System.out.println(mapObject.getType().name());
+		System.out.println(getLocation(mapObject));
+	}
+	
+	public String getLocation(MapObject mapObject) {
+		return mapObject.toString();
 	}
 
 	public double getDistance(MapObject first, MapObject second) {

@@ -2,8 +2,8 @@ package com.qa.swamp;
 
 public class Treasure extends MapObject{
 
-	public Treasure(int xLoc, int yLoc) {
-		super(xLoc, yLoc);
+	public Treasure(int xLoc, int yLoc, MapObjectType type) {
+		super(xLoc, yLoc, type);
 	}
 
 }
